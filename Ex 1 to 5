@@ -1,8 +1,8 @@
-Experiments 1 to 5 – Questions and Python Programs
-EXPERIMENT 1A – EXPLORATORY DATA ANALYSIS (EDA)
-Dataset: data.csv
+#Experiments 1 to 5 – Questions and Python Programs
+#EXPERIMENT 1A – EXPLORATORY DATA ANALYSIS (EDA)
+#Dataset: data.csv
 
-Q1. Read the data.
+#Q1. Read the data.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,18 +10,21 @@ import seaborn as sns
 
 df = pd.read_csv("data.csv")
 print(df)
-Q2. Display the first and last 5 rows.
+
+#Q2. Display the first and last 5 rows.
 print("First 5 rows:")
 print(df.head())
 
 print("Last 5 rows:")
 print(df.tail())
-Q3. Display the number of rows and columns.
+
+#Q3. Display the number of rows and columns.
 rows, columns = df.shape
 
 print("Number of rows:", rows)
 print("Number of columns:", columns)
-Q4. Display the number of categorical and numerical columns.
+
+#Q4. Display the number of categorical and numerical columns.
 categorical = df.select_dtypes(include=['object']).columns
 
 numerical = df.select_dtypes(include=['int64', 'float64']).columns
@@ -31,13 +34,15 @@ print(categorical)
 
 print("Numerical Columns:", len(numerical))
 print(numerical)
-Q5. For numerical columns, display minimum, maximum and mode.
+
+#Q5. For numerical columns, display minimum, maximum and mode.
 for col in numerical:
     print("Column:", col)
     print("Minimum:", df[col].min())
     print("Maximum:", df[col].max())
     print("Mode:", df[col].mode()[0])
-Q6. Display the columns with null values.
+
+#Q6. Display the columns with null values.
 null_columns = df.columns[df.isnull().any()]
 
 print("Columns with Null Values:")
@@ -45,7 +50,8 @@ print(null_columns)
 
 print("Number of Null Values:")
 print(df.isnull().sum())
-Q7. Calculate the 5-number summary and correlate with Box Plot.
+
+#Q7. Calculate the 5-number summary and correlate with Box Plot.
 print(df.describe())
 
 numerical = df.select_dtypes(include=['int64', 'float64'])
@@ -54,7 +60,8 @@ plt.figure(figsize=(10, 6))
 numerical.boxplot()
 plt.title("Box Plot")
 plt.show()
-Q8. Display the outlier values using Z-score.
+
+#Q8. Display the outlier values using Z-score.
 from scipy.stats import zscore
 
 z_scores = numerical.apply(zscore)
@@ -65,7 +72,8 @@ outliers = numerical[
 
 print("Outlier Values:")
 print(outliers)
-Q9. Display the features with high positive correlation, high negative correlation and no correlation.
+
+#Q9. Display the features with high positive correlation, high negative correlation and no correlation.
 corr_matrix = numerical.corr()
 
 print("Correlation Matrix:")
@@ -83,7 +91,8 @@ print("No Correlation:")
 print(corr_matrix[
     (corr_matrix > -0.1) & (corr_matrix < 0.1)
 ])
-Q10. Analyze the skewness using distribution plot.
+
+#Q10. Analyze the skewness using distribution plot.
 for col in numerical.columns:
 
     sns.displot(df[col], kde=True)
@@ -92,7 +101,8 @@ for col in numerical.columns:
     plt.show()
 
     print(col, "Skewness:", df[col].skew())
-Q11. Perform univariate analysis for categorical variables using Bar Plot.
+
+#Q11. Perform univariate analysis for categorical variables using Bar Plot.
 categorical = df.select_dtypes(include=['object'])
 
 for col in categorical.columns:
@@ -103,7 +113,8 @@ for col in categorical.columns:
 
     plt.title(col)
     plt.show()
-Q12. Perform univariate analysis for continuous variables using Swarm Plot and Violin Plot.
+
+#Q12. Perform univariate analysis for continuous variables using Swarm Plot and Violin Plot.
 for col in numerical.columns:
 
     plt.figure(figsize=(8, 5))
@@ -119,7 +130,8 @@ for col in numerical.columns:
 
     plt.title("Violin Plot - " + col)
     plt.show()
-Q13. Display the Scatter Plot between two continuous variables.
+
+#Q13. Display the Scatter Plot between two continuous variables.
 sns.scatterplot(
     x=numerical.columns[0],
     y=numerical.columns[1],
@@ -128,7 +140,8 @@ sns.scatterplot(
 
 plt.title("Scatter Plot")
 plt.show()
-Q14. Perform bivariate analysis using Categorical Plot.
+
+#Q14. Perform bivariate analysis using Categorical Plot.
 sns.catplot(
     x=categorical.columns[0],
     y=numerical.columns[0],
@@ -137,7 +150,8 @@ sns.catplot(
 )
 
 plt.show()
-Q15. Display the Count Plot for categorical variables.
+
+#Q15. Display the Count Plot for categorical variables.
 for col in categorical.columns:
 
     plt.figure(figsize=(8, 5))
@@ -149,13 +163,15 @@ for col in categorical.columns:
     plt.xticks(rotation=45)
 
     plt.show()
-Q16. Perform multivariate analysis using Pair Plot.
+
+#Q16. Perform multivariate analysis using Pair Plot.
 sns.pairplot(df)
 plt.show()
-EXPERIMENT 1B – DATA PREPROCESSING
+
+#EXPERIMENT 1B – DATA PREPROCESSING
 Dataset: data.csv
 
-Q1. Read the dataset.
+#Q1. Read the dataset.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -163,13 +179,13 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("data.csv")
 
 print(df)
-Q2. Calculate the percentage of missing values in each column.
+#Q2. Calculate the percentage of missing values in each column.
 missing = df.isnull().sum()
 
 percentage = (missing / len(df)) * 100
 
 print(percentage)
-Q3. Replace missing values in numerical columns with mean if percentage is less than 10%.
+#Q3. Replace missing values in numerical columns with mean if percentage is less than 10%.
 for col in df.select_dtypes(include=np.number).columns:
 
     if df[col].isnull().mean() < 0.10:
@@ -177,7 +193,7 @@ for col in df.select_dtypes(include=np.number).columns:
         df[col] = df[col].fillna(df[col].mean())
 
 print(df.isnull().sum())
-Q4. Perform nearest interpolation to estimate missing values in numerical columns if percentage is less than 10%.
+#Q4. Perform nearest interpolation to estimate missing values in numerical columns if percentage is less than 10%.
 for col in df.select_dtypes(include=np.number).columns:
 
     if df[col].isnull().mean() < 0.10:
@@ -185,7 +201,7 @@ for col in df.select_dtypes(include=np.number).columns:
         df[col] = df[col].interpolate(method='nearest')
 
 print(df.isnull().sum())
-Q5. Replace missing values in categorical columns with mode if percentage is less than 10%.
+#Q5. Replace missing values in categorical columns with mode if percentage is less than 10%.
 for col in df.select_dtypes(include='object').columns:
 
     if df[col].isnull().mean() < 0.10:
@@ -193,13 +209,13 @@ for col in df.select_dtypes(include='object').columns:
         df[col] = df[col].fillna(df[col].mode()[0])
 
 print(df.isnull().sum())
-Q6. Drop columns having more than 10% missing values and display updated dataset size.
+#Q6. Drop columns having more than 10% missing values and display updated dataset size.
 missing_percentage = df.isnull().mean() * 100
 
 df = df.loc[:, missing_percentage <= 10]
 
 print(df.shape)
-Q7. Remove rows with Z-score greater than 3 for Quantity column and display updated dataset size.
+#Q7. Remove rows with Z-score greater than 3 for Quantity column and display updated dataset size.
 from scipy.stats import zscore
 
 z = zscore(df['Quantity'].dropna())
@@ -209,14 +225,14 @@ df = df.loc[
 ]
 
 print(df.shape)
-Q8. Calculate the percentage of duplicate rows considering all columns.
+#Q8. Calculate the percentage of duplicate rows considering all columns.
 duplicates = df.duplicated().sum()
 
 percentage = (duplicates / len(df)) * 100
 
 print("Duplicate Rows:", duplicates)
 print("Percentage:", percentage)
-Q9. Find duplicate rows based on Customer, Product line, Age and Gender columns, remove duplicates and display updated dataset size.
+#Q9. Find duplicate rows based on Customer, Product line, Age and Gender columns, remove duplicates and display updated dataset size.
 print(df.duplicated(
     subset=['Customer', 'Product line', 'Age', 'Gender']
 ).sum())
@@ -226,7 +242,7 @@ df = df.drop_duplicates(
 )
 
 print(df.shape)
-Q10. Perform Min-Max normalization on Age column and analyze normalized values using Scatter Plot.
+#Q10. Perform Min-Max normalization on Age column and analyze normalized values using Scatter Plot.
 from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler()
@@ -239,7 +255,7 @@ plt.xlabel("Index")
 plt.ylabel("Normalized Age")
 
 plt.show()
-Q11. Perform Z-score normalization on Age column and analyze normalized values using Scatter Plot.
+#Q11. Perform Z-score normalization on Age column and analyze normalized values using Scatter Plot.
 from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
@@ -252,7 +268,7 @@ plt.xlabel("Index")
 plt.ylabel("Z-score Age")
 
 plt.show()
-Q12. Apply Label Encoding to Payment column.
+#Q12. Apply Label Encoding to Payment column.
 from sklearn.preprocessing import LabelEncoder
 
 le = LabelEncoder()
@@ -260,14 +276,14 @@ le = LabelEncoder()
 df['Payment'] = le.fit_transform(df['Payment'])
 
 print(df['Payment'])
-Q13. Apply One-Hot Encoding to Payment column.
+#Q13. Apply One-Hot Encoding to Payment column.
 df = pd.get_dummies(df, columns=['Payment'])
 
 print(df.head())
-EXPERIMENT 2 – FEATURE SELECTION AND FEATURE EXTRACTION
+#EXPERIMENT 2 – FEATURE SELECTION AND FEATURE EXTRACTION
 Dataset: Stores.csv
-
-Q1. Read and analyze the data.
+#
+#Q1. Read and analyze the data.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -279,7 +295,7 @@ print(df.head())
 print(df.info())
 print(df.describe())
 print(df.shape)
-Q2. Split the dataset into train and test sets.
+#Q2. Split the dataset into train and test sets.
 from sklearn.model_selection import train_test_split
 
 X = df.select_dtypes(include=np.number).drop(
@@ -293,10 +309,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size=0.2,
     random_state=42
 )
-Q3. Check shape of training and test sets.
+#Q3. Check shape of training and test sets.
 print("Training Shape:", X_train.shape)
 print("Testing Shape:", X_test.shape)
-Q4. Perform scaling in the data using StandardScaler.
+#Q4. Perform scaling in the data using StandardScaler.
 from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
@@ -306,19 +322,19 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 print(X_train_scaled)
-Q5. Calculate the percentage of missing values in a column.
+#Q5. Calculate the percentage of missing values in a column.
 missing = df.isnull().sum()
 
 percentage = (missing / len(df)) * 100
 
 print(percentage)
-Q6. Remove features with missing values greater than 20%.
+#Q6. Remove features with missing values greater than 20%.
 missing = df.isnull().mean() * 100
 
 df = df.loc[:, missing <= 20]
 
 print(df.shape)
-Q7. If missing values are less than 20%, do data imputation using mean/median.
+#Q7. If missing values are less than 20%, do data imputation using mean/median.
 for col in df.select_dtypes(include=np.number).columns:
 
     if df[col].isnull().mean() < 0.20:
@@ -326,7 +342,7 @@ for col in df.select_dtypes(include=np.number).columns:
         df[col] = df[col].fillna(df[col].mean())
 
 print(df.isnull().sum())
-Q8. Remove the outliers using IQR.
+#Q8. Remove the outliers using IQR.
 numerical = df.select_dtypes(include=np.number)
 
 Q1 = numerical.quantile(0.25)
@@ -341,7 +357,7 @@ df = df[~(
 ).any(axis=1)]
 
 print(df.shape)
-Q9. Use sklearn VarianceThreshold to find constant features and display the constant features.
+#Q9. Use sklearn VarianceThreshold to find constant features and display the constant features.
 from sklearn.feature_selection import VarianceThreshold
 
 X = df.select_dtypes(include=np.number)
@@ -354,7 +370,7 @@ constant_features = X.columns[~selector.get_support()]
 
 print("Constant Features:")
 print(constant_features)
-Q10. Remove features with low variance.
+#Q10. Remove features with low variance.
 selector = VarianceThreshold(threshold=0.01)
 
 X_new = selector.fit_transform(X)
@@ -363,7 +379,7 @@ selected_features = X.columns[selector.get_support()]
 
 print("Selected Features:")
 print(selected_features)
-Q11. Remove highly correlated features.
+#Q11. Remove highly correlated features.
 corr = X.corr().abs()
 
 upper = corr.where(
@@ -378,7 +394,7 @@ drop_cols = [
 X_new = X.drop(columns=drop_cols)
 
 print(X_new.head())
-Q12. Perform Univariate Feature Selection (SelectKBest, SelectPercentile).
+#Q12. Perform Univariate Feature Selection (SelectKBest, SelectPercentile).
 from sklearn.feature_selection import (
     SelectKBest,
     SelectPercentile,
@@ -408,7 +424,7 @@ X_percentile = selector2.fit_transform(
 
 print("SelectPercentile:")
 print(X_percentile)
-Q13. Apply Pearson Correlation Coefficient / Spearman's Rank Coefficient and find Correlation Matrix with Heatmap.
+#Q13. Apply Pearson Correlation Coefficient / Spearman's Rank Coefficient and find Correlation Matrix with Heatmap.
 pearson = X_new.corr(method='pearson')
 
 spearman = X_new.corr(method='spearman')
@@ -424,7 +440,7 @@ sns.heatmap(pearson, annot=True, cmap='coolwarm')
 plt.title("Correlation Heatmap")
 
 plt.show()
-Q14. Apply Principal Component Analysis (PCA) for matrix factorization.
+#Q14. Apply Principal Component Analysis (PCA) for matrix factorization.
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -450,7 +466,7 @@ plt.ylabel("PC2")
 plt.title("PCA Scatter Plot")
 
 plt.show()
-Q15. Apply Linear Discriminant Analysis (LDA) to perform feature extraction.
+#Q15. Apply Linear Discriminant Analysis (LDA) to perform feature extraction.
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.preprocessing import LabelEncoder
 
@@ -473,11 +489,11 @@ plt.ylabel("Class")
 plt.title("LDA Scatter Plot")
 
 plt.show()
-EXPERIMENT 3 – MULTIPLE LINEAR REGRESSION AND LOGISTIC REGRESSION
-PART A – MULTIPLE LINEAR REGRESSION
-Dataset: Life Expectancy Data.csv
+#EXPERIMENT 3 – MULTIPLE LINEAR REGRESSION AND LOGISTIC REGRESSION
+#PART A – MULTIPLE LINEAR REGRESSION
+#Dataset: Life Expectancy Data.csv
 
-Q1. Consider the given dataset.
+#Q1. Consider the given dataset.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -485,7 +501,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("Life Expectancy Data.csv")
 
 print(df.head())
-Q2. Do necessary preprocessing.
+#Q2. Do necessary preprocessing.
 df = df.dropna()
 
 df = pd.get_dummies(
@@ -495,14 +511,14 @@ df = pd.get_dummies(
 )
 
 print(df.head())
-Q3. Choose independent variables (X1, X2...) and dependent variable (Y) from given dataset.
+#Q3. Choose independent variables (X1, X2...) and dependent variable (Y) from given dataset.
 X = df.drop('Life expectancy', axis=1)
 
 y = df['Life expectancy']
 
 print(X.head())
 print(y.head())
-Q4. Print values of Y-intercept and independent variable coefficients.
+#Q4. Print values of Y-intercept and independent variable coefficients.
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
@@ -519,12 +535,12 @@ model.fit(X_train, y_train)
 print("Intercept:", model.intercept_)
 
 print("Coefficients:", model.coef_)
-Q5. Find the Ypred.
+#Q5. Find the Ypred.
 ry_pred = model.predict(X_test)
 
 print("Predicted Values:")
 print(y_pred)
-Q6. Calculate SSE and RMSE values.
+#Q6. Calculate SSE and RMSE values.
 from sklearn.metrics import mean_squared_error
 
 SSE = np.sum((y_test - y_pred) ** 2)
@@ -534,13 +550,13 @@ RMSE = np.sqrt(mean_squared_error(y_test, y_pred))
 print("SSE:", SSE)
 
 print("RMSE:", RMSE)
-Q7. Calculate the coefficient of determination (R2).
+#Q7. Calculate the coefficient of determination (R2).
 from sklearn.metrics import r2_score
 
 r2 = r2_score(y_test, y_pred)
 
 print("R2 Score:", r2)
-Q8. Plot the scatter graph of Yactual and Ypredicted.
+#Q8. Plot the scatter graph of Yactual and Ypredicted.
 plt.scatter(y_test, y_pred)
 
 plt.xlabel("Actual Values")
@@ -550,7 +566,7 @@ plt.ylabel("Predicted Values")
 plt.title("Actual vs Predicted")
 
 plt.show()
-Q9. Predict the output for given input values.
+#Q9. Predict the output for given input values.
 sample = X_test.iloc[[0]]
 
 prediction = model.predict(sample)
@@ -559,18 +575,18 @@ print("Input:")
 print(sample)
 
 print("Predicted Life Expectancy:", prediction[0])
-PART B – LOGISTIC REGRESSION
-Dataset: Prostate_Cancer.csv
+#PART B – LOGISTIC REGRESSION
+#Dataset: Prostate_Cancer.csv
 
-Q1. Read the CSV data into a Pandas DataFrame.
+#Q1. Read the CSV data into a Pandas DataFrame.
 import pandas as pd
 import numpy as np
 
 df = pd.read_csv("Prostate_Cancer.csv")
 
 print(df.head())
-Q2. Perform necessary preprocessing (handle missing values).
-Q3. Encode categorical variables and normalize features if required.
+#Q2. Perform necessary preprocessing (handle missing values).
+#Q3. Encode categorical variables and normalize features if required.
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 df = df.dropna()
@@ -582,7 +598,7 @@ df['diagnosis_result'] = le.fit_transform(
 )
 
 print(df.head())
-Q4. Choose the independent variables (X) and dependent variable (Y).
+#Q4. Choose the independent variables (X) and dependent variable (Y).
 X = df.drop(
     columns=['id', 'diagnosis_result'],
     errors='ignore'
@@ -592,7 +608,7 @@ y = df['diagnosis_result']
 
 print(X.head())
 print(y.head())
-Q5. Split the dataset into training and testing sets.
+#Q5. Split the dataset into training and testing sets.
 from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -607,7 +623,7 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 
 X_test = scaler.transform(X_test)
-Q6. Train a Logistic Regression model and print coefficients and intercept.
+#Q6. Train a Logistic Regression model and print coefficients and intercept.
 from sklearn.linear_model import LogisticRegression
 
 model = LogisticRegression()
@@ -617,12 +633,12 @@ model.fit(X_train, y_train)
 print("Coefficients:", model.coef_)
 
 print("Intercept:", model.intercept_)
-Q7. Predict the class labels (Ypred) for the test dataset.
+#Q7. Predict the class labels (Ypred) for the test dataset.
 y_pred = model.predict(X_test)
 
 print("Predicted Values:")
 print(y_pred)
-Q8. Generate Confusion Matrix and calculate Accuracy, Precision, Recall and F1-score.
+#Q8. Generate Confusion Matrix and calculate Accuracy, Precision, Recall and F1-score.
 from sklearn.metrics import (
     confusion_matrix,
     accuracy_score,
@@ -643,7 +659,7 @@ print("Precision:", precision_score(y_test, y_pred))
 print("Recall:", recall_score(y_test, y_pred))
 
 print("F1 Score:", f1_score(y_test, y_pred))
-Q9. Plot ROC Curve and calculate AUC.
+#Q9. Plot ROC Curve and calculate AUC.
 from sklearn.metrics import roc_curve, roc_auc_score
 
 y_prob = model.predict_proba(X_test)[:, 1]
@@ -663,7 +679,7 @@ plt.title("ROC Curve")
 plt.show()
 
 print("AUC:", auc)
-Q10. Predict output class and probability by providing sample input values.
+#Q10. Predict output class and probability by providing sample input values.
 sample = X_test[0].reshape(1, -1)
 
 prediction = model.predict(sample)
@@ -673,10 +689,10 @@ probability = model.predict_proba(sample)
 print("Predicted Class:", prediction[0])
 
 print("Probability:", probability)
-EXPERIMENT 4 – IMPLEMENTATION OF SINGLE LAYER PERCEPTRON
-Dataset: BankNote_Authentication.csv
+#EXPERIMENT 4 – IMPLEMENTATION OF SINGLE LAYER PERCEPTRON
+#Dataset: BankNote_Authentication.csv
 
-Q1. Read the dataset and perform necessary preprocessing.
+#Q1. Read the dataset and perform necessary preprocessing.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -704,7 +720,7 @@ print("Target:")
 print(y.head())
 
 print("Dataset Shape:", df.shape)
-Q2. Determine the number of epochs which have minimum error.
+#Q2. Determine the number of epochs which have minimum error.
 X_train, X_test, y_train, y_test = train_test_split(
     X, y,
     test_size=0.2,
@@ -755,7 +771,7 @@ min_epoch = np.argmin(errors) + 1
 print("Minimum Error:", min_error)
 
 print("Epoch with Minimum Error:", min_epoch)
-Q3. Display final weight of each attribute.
+#Q3. Display final weight of each attribute.
 attributes = [
     'variance',
     'skewness',
@@ -770,7 +786,7 @@ for attribute, weight in zip(attributes, weights):
     print(attribute, ":", weight)
 
 print("Bias:", bias)
-Q4. Plot the convergence of error for each iteration.
+#Q4. Plot the convergence of error for each iteration.
 plt.figure(figsize=(8, 5))
 
 plt.plot(
@@ -788,10 +804,10 @@ plt.title("Convergence of Error - Single Layer Perceptron")
 plt.grid(True)
 
 plt.show()
-EXPERIMENT 5 – IMPLEMENTATION OF MULTI-LAYER PERCEPTRON WITH BACKPROPAGATION ALGORITHM IN PYTORCH
-Dataset: HR_comma_sep.csv
+#EXPERIMENT 5 – IMPLEMENTATION OF MULTI-LAYER PERCEPTRON WITH BACKPROPAGATION ALGORITHM IN PYTORCH
+#Dataset: HR_comma_sep.csv
 
-Q1. Load the dataset and handle missing values (fill with mean/median/mode).
+#Q1. Load the dataset and handle missing values (fill with mean/median/mode).
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -833,7 +849,7 @@ for col in df.columns:
         )
 
 print(df.isnull().sum())
-Q2. Normalize numerical features using Min-Max Scaling.
+#Q2. Normalize numerical features using Min-Max Scaling.
 scaler = MinMaxScaler()
 
 numerical = df.select_dtypes(include=['number']).columns
@@ -841,7 +857,7 @@ numerical = df.select_dtypes(include=['number']).columns
 df[numerical] = scaler.fit_transform(df[numerical])
 
 print(df.head())
-Q3. Encode categorical features using Label Encoding.
+#Q3. Encode categorical features using Label Encoding.
 le = LabelEncoder()
 
 for col in df.select_dtypes(include=['object']).columns:
@@ -849,7 +865,7 @@ for col in df.select_dtypes(include=['object']).columns:
     df[col] = le.fit_transform(df[col])
 
 print(df.head())
-Q4. Split the dataset into 75% training and 25% testing.
+#Q4. Split the dataset into 75% training and 25% testing.
 X = df.drop('left', axis=1)
 
 y = df['left']
@@ -864,7 +880,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 print("Training Shape:", X_train.shape)
 
 print("Testing Shape:", X_test.shape)
-Q5. Design a Multi-Layer Perceptron (MLP) using torch.nn.Module.
+#Q5. Design a Multi-Layer Perceptron (MLP) using torch.nn.Module.
 X_train = torch.tensor(
     X_train.to_numpy(),
     dtype=torch.float32
@@ -920,7 +936,7 @@ optimizer = torch.optim.Adam(
 )
 
 print(model)
-Q6. Train the model for 100 epochs.
+#Q6. Train the model for 100 epochs.
 epochs = 100
 
 losses = []
@@ -947,7 +963,7 @@ for epoch in range(epochs):
             f"Epoch [{epoch+1}/{epochs}], "
             f"Loss: {loss.item():.4f}"
         )
-Q7. Plot training loss vs number of iterations.
+#Q7. Plot training loss vs number of iterations.
 plt.figure(figsize=(8, 5))
 
 plt.plot(losses)
@@ -959,7 +975,7 @@ plt.ylabel("Training Loss")
 plt.title("Training Loss vs Number of Iterations")
 
 plt.show()
-Q8. Compute and display Confusion Matrix.
+#Q8. Compute and display Confusion Matrix.
 model.eval()
 
 with torch.no_grad():
@@ -992,7 +1008,7 @@ plt.ylabel("Actual")
 plt.title("Confusion Matrix")
 
 plt.show()
-Q9. Calculate Accuracy, Precision, Recall and F1-score. Interpret the performance metrics.
+#Q9. Calculate Accuracy, Precision, Recall and F1-score. Interpret the performance metrics.
 accuracy = accuracy_score(y_true, y_pred)
 
 precision = precision_score(
