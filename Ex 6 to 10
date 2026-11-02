@@ -1,7 +1,54 @@
-EXPERIMENT 6 – IMPLEMENTATION OF HIERARCHICAL CLUSTERING ALGORITHMS
-Dataset: Kasol.csv
+# MLT Lab - Experiments 6 to 10
 
-Q1. Load the given dataset.
+This repository contains implementations of various machine learning and data mining algorithms covering clustering, association rule mining, and ensemble learning techniques.
+
+## Table of Contents
+- [Experiment 6: Hierarchical Clustering](#experiment-6--implementation-of-hierarchical-clustering-algorithms)
+- [Experiment 7: Fuzzy C-Means Clustering](#experiment-7--implementation-of-fuzzy-c-means-clustering-algorithm)
+- [Experiment 8: Self-Organizing Map (SOM)](#experiment-8--implementation-of-self-organizing-map-som)
+- [Experiment 9: Association Rule Learning using Apriori](#experiment-9--association-rule-learning-using-apriori-algorithm)
+- [Experiment 10: Ensemble Learning](#experiment-10--implementation-of-ensemble-learning)
+
+---
+
+## Overview
+
+This lab focuses on implementing and analyzing different ML algorithms:
+
+- Hierarchical clustering
+- Fuzzy C-means clustering
+- Self-Organizing Map (SOM)
+- Apriori association rule mining
+- Ensemble learning using Random Forest and AdaBoost
+
+The experiments use datasets such as:
+- `Kasol.csv`
+- `HR Data.csv`
+- `Shop2.csv`
+- `adult.csv`
+- Wisconsin Breast Cancer dataset from `sklearn`
+
+---
+
+## Prerequisites
+
+Install the required Python libraries:
+
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn scipy scikit-fuzzy minisom mlxtend
+```
+
+---
+
+# Experiment 6 – Implementation of Hierarchical Clustering Algorithms
+
+Dataset: `Kasol.csv`
+
+## Objective
+To implement hierarchical agglomerative clustering and analyze cluster quality using silhouette score, Davies-Bouldin index, and dendrograms.
+
+### Q1. Load the dataset
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,37 +60,43 @@ print(df.head())
 print(df.info())
 print(df.shape)
 print(df.isnull().sum())
-Q2. Conduct the preprocessing steps if required (handling missing values, encoding categorical data, normalization).
+```
+
+### Q2. Preprocess the data
+```python
 from sklearn.preprocessing import StandardScaler
 
 df = df.dropna()
-
 df = pd.get_dummies(df, drop_first=True, dtype=int)
 
 print(df.head())
-Q3. Remove the target variable if available in the dataset.
+```
+
+### Q3. Remove the target variable if present
+```python
 X = df.drop(
     columns=['Discharge', 'Unnamed: 0'],
     errors='ignore'
 )
 
 print(X.head())
-Q4. Plot the data points using scatter plots.
+```
+
+### Q4. Plot data points
+```python
 plt.figure(figsize=(8, 5))
-
 plt.scatter(X.iloc[:, 0], X.iloc[:, 1])
-
 plt.xlabel(X.columns[0])
 plt.ylabel(X.columns[1])
-
 plt.title("Original Data Points")
-
 plt.show()
-Q5. Apply Hierarchical Agglomerative Clustering using Single Linkage to cluster the data points into N clusters.
+```
+
+### Q5. Apply hierarchical agglomerative clustering using single linkage
+```python
 from sklearn.cluster import AgglomerativeClustering
 
 scaler = StandardScaler()
-
 X_scaled = scaler.fit_transform(X)
 
 model = AgglomerativeClustering(
@@ -57,23 +110,24 @@ print("Cluster Labels:")
 print(labels)
 
 df['Cluster'] = labels
-Q6. Determine the optimal number of clusters using a dendrogram.
+```
+
+### Q6. Determine the optimal number of clusters using dendrogram
+```python
 from scipy.cluster.hierarchy import dendrogram, linkage
 
 linked = linkage(X_scaled, method='single')
 
 plt.figure(figsize=(12, 6))
-
 dendrogram(linked)
-
 plt.title("Hierarchical Clustering Dendrogram")
-
 plt.xlabel("Data Points")
-
 plt.ylabel("Euclidean Distance")
-
 plt.show()
-Q7. Print and plot the cluster centroids and cluster labels.
+```
+
+### Q7. Print and plot the cluster centroids and labels
+```python
 df['Cluster'] = labels
 
 centroids = df.groupby('Cluster')[X.columns].mean()
@@ -82,7 +136,6 @@ print("Cluster Centroids:")
 print(centroids)
 
 plt.figure(figsize=(8, 5))
-
 plt.scatter(
     X_scaled[:, 0],
     X_scaled[:, 1],
@@ -98,85 +151,75 @@ plt.scatter(
 )
 
 plt.title("Hierarchical Clustering")
-
 plt.show()
-Q8. Repeat the clustering algorithm for different cluster values.
-for k in [2, 3, 4, 5]:
+```
 
+### Q8. Repeat the clustering for different cluster sizes
+```python
+for k in [2, 3, 4, 5]:
     model = AgglomerativeClustering(
         n_clusters=k,
         linkage='single'
     )
-
     labels = model.fit_predict(X_scaled)
 
     print("Number of Clusters:", k)
-
     print("Cluster Labels:")
     print(labels)
-Q9. Measure the clustering performance using Silhouette Score and Davies-Bouldin Index.
-from sklearn.metrics import (
-    silhouette_score,
-    davies_bouldin_score
-)
+```
+
+### Q9. Evaluate clustering performance
+```python
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 for k in [2, 3, 4, 5]:
-
     model = AgglomerativeClustering(
         n_clusters=k,
         linkage='single'
     )
-
     labels = model.fit_predict(X_scaled)
 
     print("Clusters:", k)
+    print("Silhouette Score:", silhouette_score(X_scaled, labels))
+    print("Davies-Bouldin Index:", davies_bouldin_score(X_scaled, labels))
+```
 
-    print("Silhouette Score:",
-          silhouette_score(X_scaled, labels))
-
-    print("Davies-Bouldin Index:",
-          davies_bouldin_score(X_scaled, labels))
-Q10. Print and plot the cluster centroids and cluster labels for different clusters.
+### Q10. Plot cluster centroids for different cluster values
+```python
 for k in [2, 3, 4, 5]:
-
     model = AgglomerativeClustering(
         n_clusters=k,
         linkage='single'
     )
-
     labels = model.fit_predict(X_scaled)
 
     centroids = pd.DataFrame(X_scaled).groupby(labels).mean()
 
     print("Number of Clusters:", k)
-
     print("Centroids:")
     print(centroids)
 
     plt.figure(figsize=(8, 5))
-
-    plt.scatter(
-        X_scaled[:, 0],
-        X_scaled[:, 1],
-        c=labels,
-        cmap='rainbow'
-    )
-
+    plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=labels, cmap='rainbow')
     plt.title("Hierarchical Clustering - " + str(k))
-
     plt.show()
 
     result = X.copy()
     result['Cluster'] = labels
+    result.to_csv(f"Hierarchical_Clusters_{k}.csv", index=False)
+```
 
-    result.to_csv(
-        f"Hierarchical_Clusters_{k}.csv",
-        index=False
-    )
-EXPERIMENT 7 – IMPLEMENTATION OF FUZZY C-MEANS CLUSTERING ALGORITHM
-Dataset: HR Data.csv
+---
 
-Q1. Load the dataset and perform preprocessing.
+# Experiment 7 – Implementation of Fuzzy C-Means Clustering Algorithm
+
+Dataset: `HR Data.csv`
+
+## Objective
+To apply Fuzzy C-Means clustering and compute partition coefficient and classification entropy.
+
+### Q1. Load and preprocess the dataset
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -184,45 +227,39 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("HR Data.csv")
 
 print(df.head())
-
 print(df.info())
-
 print(df.isnull().sum())
 
 df = df.dropna()
 
 X = df.select_dtypes(include=np.number)
-
-X = X.drop(
-    columns=['left'],
-    errors='ignore'
-)
+X = X.drop(columns=['left'], errors='ignore')
 
 print(X.head())
-Q2. Standardize the dataset.
+```
+
+### Q2. Standardize the dataset
+```python
 from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
-
 X_scaled = scaler.fit_transform(X)
 
 print(X_scaled)
-Q3. Plot the data points.
+```
+
+### Q3. Plot the data points
+```python
 plt.figure(figsize=(8, 5))
-
-plt.scatter(
-    X_scaled[:, 0],
-    X_scaled[:, 1]
-)
-
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1])
 plt.xlabel("Feature 1")
-
 plt.ylabel("Feature 2")
-
 plt.title("Original Data Points")
-
 plt.show()
-Q4. Apply Fuzzy C-Means clustering.
+```
+
+### Q4. Apply Fuzzy C-Means clustering
+```python
 !pip install scikit-fuzzy
 
 import skfuzzy as fuzz
@@ -240,22 +277,23 @@ labels = np.argmax(u, axis=0)
 
 print("Cluster Labels:")
 print(labels)
-
 print("Cluster Centroids:")
 print(cntr)
-
 print("Partition Coefficient:", fpc)
-Q5. Calculate Classification Entropy.
+```
+
+### Q5. Calculate classification entropy
+```python
 epsilon = 1e-10
 
-CE = -np.sum(
-    u * np.log(u + epsilon)
-) / X_scaled.shape[0]
+CE = -np.sum(u * np.log(u + epsilon)) / X_scaled.shape[0]
 
 print("Classification Entropy:", CE)
-Q6. Repeat the algorithm for different numbers of clusters.
-for c in [2, 3, 4, 5]:
+```
 
+### Q6. Repeat for different numbers of clusters
+```python
+for c in [2, 3, 4, 5]:
     cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
         X_scaled.T,
         c=c,
@@ -266,66 +304,57 @@ for c in [2, 3, 4, 5]:
 
     labels = np.argmax(u, axis=0)
 
-    CE = -np.sum(
-        u * np.log(u + 1e-10)
-    ) / X_scaled.shape[0]
+    CE = -np.sum(u * np.log(u + 1e-10)) / X_scaled.shape[0]
 
     print("Clusters:", c)
-
     print("Partition Coefficient:", fpc)
-
     print("Classification Entropy:", CE)
-Q7. Plot the clustering result.
+```
+
+### Q7. Plot clustering result
+```python
 plt.figure(figsize=(8, 5))
-
-plt.scatter(
-    X_scaled[:, 0],
-    X_scaled[:, 1],
-    c=labels,
-    cmap='rainbow'
-)
-
-plt.scatter(
-    cntr[:, 0],
-    cntr[:, 1],
-    marker='X',
-    s=200
-)
-
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=labels, cmap='rainbow')
+plt.scatter(cntr[:, 0], cntr[:, 1], marker='X', s=200)
 plt.title("Fuzzy C-Means Clustering")
-
 plt.xlabel("Feature 1")
-
 plt.ylabel("Feature 2")
-
 plt.show()
-Q8. Print the cluster centroids and labels.
-print("Cluster Centroids:")
+```
 
+### Q8. Print final cluster centroids and labels
+```python
+print("Cluster Centroids:")
 print(cntr)
 
 print("Cluster Labels:")
-
 print(labels)
-Q9. Create a Tableau-ready dataset.
-result = X.copy()
+```
 
+### Q9. Create Tableau-ready dataset
+```python
+result = X.copy()
 result['Cluster'] = labels
 
 for i in range(u.shape[0]):
-
     result[f'Membership_{i+1}'] = u[i]
 
-result.to_csv(
-    "Fuzzy_CMeans_Result.csv",
-    index=False
-)
+result.to_csv("Fuzzy_CMeans_Result.csv", index=False)
 
 print(result.head())
-EXPERIMENT 8 – IMPLEMENTATION OF SELF-ORGANIZING MAP (SOM)
-Dataset: HR Data.csv
+```
 
-Q1. Install and import the required libraries for implementing Self-Organizing Map.
+---
+
+# Experiment 8 – Implementation of Self-Organizing Map (SOM)
+
+Dataset: `HR Data.csv`
+
+## Objective
+To apply Self-Organizing Map (SOM) for clustering and evaluate cluster quality.
+
+### Q1. Install and import required libraries
+```python
 !pip install minisom
 
 import pandas as pd
@@ -333,58 +362,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from minisom import MiniSom
-
 from sklearn.preprocessing import StandardScaler
-
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score, davies_bouldin_score
+```
 
-from sklearn.metrics import (
-    silhouette_score,
-    davies_bouldin_score
-)
-Q2. Load the HR dataset and display its basic information.
+### Q2. Load the HR dataset
+```python
 df = pd.read_csv("HR Data.csv")
 
 print(df.head())
-
 print(df.info())
-
 print(df.shape)
-
 print(df.isnull().sum())
-Q3. Preprocess the HR dataset and remove the target variable.
+```
+
+### Q3. Preprocess and remove target variable
+```python
 df = df.dropna()
 
 X = df.select_dtypes(include=np.number)
-
-X = X.drop(
-    columns=['left'],
-    errors='ignore'
-)
+X = X.drop(columns=['left'], errors='ignore')
 
 print(X.head())
-Q4. Standardize the HR dataset before applying SOM.
-scaler = StandardScaler()
+```
 
+### Q4. Standardize the data
+```python
+scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 print(X_scaled)
-Q5. Plot the original data points of the HR dataset.
+```
+
+### Q5. Plot original data
+```python
 plt.figure(figsize=(8, 5))
-
-plt.scatter(
-    X_scaled[:, 0],
-    X_scaled[:, 1]
-)
-
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1])
 plt.xlabel("Feature 1")
-
 plt.ylabel("Feature 2")
-
 plt.title("Original Data Points")
-
 plt.show()
-Q6. Apply the Self-Organizing Map algorithm to the HR dataset.
+```
+
+### Q6. Train the SOM
+```python
 som = MiniSom(
     x=10,
     y=10,
@@ -396,17 +418,14 @@ som = MiniSom(
 
 som.random_weights_init(X_scaled)
 
-som.train_random(
-    X_scaled,
-    num_iteration=100
-)
+som.train_random(X_scaled, num_iteration=100)
 
 print("SOM Training Completed")
-Q7. Calculate the cluster centroids from the SOM cluster labels.
-bmu = np.array([
-    som.winner(x) for x in X_scaled
-])
+```
 
+### Q7. Calculate cluster centroids from BMUs
+```python
+bmu = np.array([som.winner(x) for x in X_scaled])
 coordinates = bmu.reshape(len(X_scaled), 2)
 
 kmeans = KMeans(
@@ -417,29 +436,24 @@ kmeans = KMeans(
 
 labels = kmeans.fit_predict(coordinates)
 
-centroids = pd.DataFrame(
-    X_scaled
-).groupby(labels).mean()
+centroids = pd.DataFrame(X_scaled).groupby(labels).mean()
 
 print("Cluster Centroids:")
 print(centroids)
-Q8. Calculate the Silhouette Score and Davies-Bouldin Score.
-sil = silhouette_score(
-    X_scaled,
-    labels
-)
+```
 
-db = davies_bouldin_score(
-    X_scaled,
-    labels
-)
+### Q8. Evaluate performance
+```python
+sil = silhouette_score(X_scaled, labels)
+db = davies_bouldin_score(X_scaled, labels)
 
 print("Silhouette Score:", sil)
-
 print("Davies-Bouldin Score:", db)
-Q9. Repeat the SOM algorithm for different numbers of clusters.
-for k in [2, 3, 4, 5]:
+```
 
+### Q9. Repeat SOM-based clustering for different cluster counts
+```python
+for k in [2, 3, 4, 5]:
     kmeans = KMeans(
         n_clusters=k,
         random_state=42,
@@ -449,23 +463,20 @@ for k in [2, 3, 4, 5]:
     labels = kmeans.fit_predict(coordinates)
 
     sil = silhouette_score(X_scaled, labels)
-
     db = davies_bouldin_score(X_scaled, labels)
 
     print("Clusters:", k)
-
     print("Silhouette Score:", sil)
-
     print("Davies-Bouldin Score:", db)
-Q10. Plot the Silhouette Score and Davies-Bouldin Score for different numbers of clusters.
+```
+
+### Q10. Plot silhouette and Davies-Bouldin score
+```python
 sil_scores = []
-
 db_scores = []
-
 cluster_values = [2, 3, 4, 5]
 
 for k in cluster_values:
-
     km = KMeans(
         n_clusters=k,
         random_state=42,
@@ -474,45 +485,25 @@ for k in cluster_values:
 
     labels = km.fit_predict(coordinates)
 
-    sil_scores.append(
-        silhouette_score(X_scaled, labels)
-    )
+    sil_scores.append(silhouette_score(X_scaled, labels))
+    db_scores.append(davies_bouldin_score(X_scaled, labels))
 
-    db_scores.append(
-        davies_bouldin_score(X_scaled, labels)
-    )
-
-plt.plot(
-    cluster_values,
-    sil_scores,
-    marker='o'
-)
-
+plt.plot(cluster_values, sil_scores, marker='o')
 plt.xlabel("Number of Clusters")
-
 plt.ylabel("Silhouette Score")
-
 plt.title("Silhouette Score")
-
 plt.show()
 
-plt.plot(
-    cluster_values,
-    db_scores,
-    marker='o'
-)
-
+plt.plot(cluster_values, db_scores, marker='o')
 plt.xlabel("Number of Clusters")
-
 plt.ylabel("Davies-Bouldin Score")
-
 plt.title("Davies-Bouldin Score")
-
 plt.show()
-Q11. Determine and apply the final number of clusters.
-best_k = cluster_values[
-    np.argmax(sil_scores)
-]
+```
+
+### Q11. Determine the final number of clusters
+```python
+best_k = cluster_values[np.argmax(sil_scores)]
 
 print("Optimal Number of Clusters:", best_k)
 
@@ -525,81 +516,73 @@ final_model = KMeans(
 final_labels = final_model.fit_predict(coordinates)
 
 print(final_labels)
-Q12. Print the final cluster centroids and cluster labels.
-final_centroids = pd.DataFrame(
-    X_scaled
-).groupby(final_labels).mean()
+```
+
+### Q12. Print final cluster centroids and labels
+```python
+final_centroids = pd.DataFrame(X_scaled).groupby(final_labels).mean()
 
 print("Final Cluster Labels:")
 print(final_labels)
 
 print("Final Cluster Centroids:")
 print(final_centroids)
-Q13. Plot the final SOM clusters and cluster centroids.
+```
+
+### Q13. Plot final SOM clustering result
+```python
 plt.figure(figsize=(8, 5))
-
-plt.scatter(
-    X_scaled[:, 0],
-    X_scaled[:, 1],
-    c=final_labels,
-    cmap='rainbow'
-)
-
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=final_labels, cmap='rainbow')
 plt.title("Final SOM Clustering")
-
 plt.xlabel("Feature 1")
-
 plt.ylabel("Feature 2")
-
 plt.show()
-EXPERIMENT 9 – ASSOCIATION RULE LEARNING USING APRIORI ALGORITHM
-Dataset: Shop2.csv
+```
 
-Minimum Support: 0.08
+---
 
-Minimum Confidence: 0.50
+# Experiment 9 – Association Rule Learning using Apriori Algorithm
 
-Q1. Load a dataset of transactions from a CSV file.
+Dataset: `Shop2.csv`
+
+Minimum Support: `0.08`  
+Minimum Confidence: `0.50`
+
+## Objective
+To mine frequent itemsets and derive association rules using the Apriori algorithm.
+
+### Q1. Load the dataset
+```python
 !pip install mlxtend
 
 import pandas as pd
 import numpy as np
 
 from mlxtend.preprocessing import TransactionEncoder
-
-from mlxtend.frequent_patterns import (
-    apriori,
-    association_rules
-)
+from mlxtend.frequent_patterns import apriori, association_rules
 
 df = pd.read_csv("Shop2.csv")
 
 print(df.head())
-
 print(df.shape)
-Q2. Identify frequent itemsets using the Apriori algorithm.
+```
+
+### Q2. Identify frequent itemsets
+```python
 transactions = []
 
 for row in df.values:
-
     items = [
         str(item).strip()
         for item in row
         if pd.notna(item)
     ]
-
     transactions.append(items)
 
 te = TransactionEncoder()
+te_array = te.fit(transactions).transform(transactions)
 
-te_array = te.fit(
-    transactions
-).transform(transactions)
-
-basket = pd.DataFrame(
-    te_array,
-    columns=te.columns_
-)
+basket = pd.DataFrame(te_array, columns=te.columns_)
 
 print(basket.head())
 
@@ -610,9 +593,11 @@ frequent_itemsets = apriori(
 )
 
 print("Frequent Itemsets:")
-
 print(frequent_itemsets)
-Q3. Generate association rules based on a minimum confidence threshold.
+```
+
+### Q3. Generate association rules
+```python
 rules = association_rules(
     frequent_itemsets,
     metric="confidence",
@@ -620,81 +605,74 @@ rules = association_rules(
 )
 
 print("Association Rules:")
-
 print(
-    rules[
-        ['antecedents', 'consequents',
-         'support', 'confidence', 'lift']
-    ]
+    rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']]
 )
-Q4. Extract rules with higher confidence values.
-high_confidence = rules[
-    rules['confidence'] > 0.70
-]
+```
+
+### Q4. Extract high-confidence rules
+```python
+high_confidence = rules[rules['confidence'] > 0.70]
 
 print("High Confidence Rules:")
-
 print(
-    high_confidence[
-        ['antecedents', 'consequents',
-         'support', 'confidence', 'lift']
-    ]
+    high_confidence[['antecedents', 'consequents', 'support', 'confidence', 'lift']]
 )
-EXPERIMENT 10 – IMPLEMENTATION OF ENSEMBLE LEARNING
+```
+
+---
+
+# Experiment 10 – Implementation of Ensemble Learning
+
 Algorithms:
+- Random Forest Classifier
+- AdaBoost Classifier
 
-Random Forest Classifier
-AdaBoost Classifier
 Datasets:
+- Wisconsin Breast Cancer Dataset (WDBC)
+- Adult Census Income Dataset
 
-Wisconsin Breast Cancer Dataset (WDBC)
-Adult Census Income Dataset
-PART A – RANDOM FOREST CLASSIFIER
-Dataset: WDBC
+---
 
-Q1. Read the dataset and do necessary preprocessing (data imputation in null values, use encoding techniques to convert categorical to numerical).
+## PART A – Random Forest Classifier
+
+Dataset: `WDBC`
+
+### Q1. Read and preprocess the dataset
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.datasets import load_breast_cancer
-
 from sklearn.model_selection import train_test_split
-
 from sklearn.ensemble import RandomForestClassifier
-
-from sklearn.metrics import (
-    confusion_matrix,
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 
 data = load_breast_cancer()
 
-X = pd.DataFrame(
-    data.data,
-    columns=data.feature_names
-)
-
+X = pd.DataFrame(data.data, columns=data.feature_names)
 y = data.target
 
 print(X.head())
-
 print(X.isnull().sum())
 
 X = X.fillna(X.median())
-
 print("Dataset Shape:", X.shape)
-Q2. Choose the independent variables (X) and dependent variable (Y) from the given dataset.
+```
+
+### Q2. Choose independent and dependent variables
+```python
 print("Independent Variables:")
 print(X.head())
 
 print("Dependent Variable:")
 print(y)
-Q3. Create different models of Random Forest using different parameters (minimum of 4).
+```
+
+### Q3. Build multiple Random Forest models
+```python
 X_train, X_test, y_train, y_test = train_test_split(
     X, y,
     test_size=0.2,
@@ -703,118 +681,89 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 models = {
-    "Model 1": RandomForestClassifier(
-        n_estimators=50,
-        max_depth=5,
-        random_state=42
-    ),
-
-    "Model 2": RandomForestClassifier(
-        n_estimators=100,
-        max_depth=10,
-        random_state=42
-    ),
-
-    "Model 3": RandomForestClassifier(
-        n_estimators=150,
-        max_depth=None,
-        random_state=42
-    ),
-
-    "Model 4": RandomForestClassifier(
-        n_estimators=200,
-        max_depth=15,
-        random_state=42
-    )
+    "Model 1": RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),
+    "Model 2": RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42),
+    "Model 3": RandomForestClassifier(n_estimators=150, max_depth=None, random_state=42),
+    "Model 4": RandomForestClassifier(n_estimators=200, max_depth=15, random_state=42)
 }
 
 for name, model in models.items():
-
     model.fit(X_train, y_train)
-
     print(name, "Training Completed")
-Q4. Find the best parameters for the model and calculate the Ypredict value.
+```
+
+### Q4. Find the best model
+```python
 results = []
-
 best_model = None
-
 best_f1 = -1
 
 for name, model in models.items():
-
     y_pred = model.predict(X_test)
-
     f1 = f1_score(y_test, y_pred)
-
     results.append((name, f1))
 
     if f1 > best_f1:
-
         best_f1 = f1
-
         best_model = model
 
     print(name)
-
     print("F1 Score:", f1)
 
 print("Best Model:", best_model)
 
 y_pred = best_model.predict(X_test)
-
 print("Predicted Values:")
 print(y_pred)
-Q5. Display the confusion table and calculate accuracy, precision, recall and F-score for different parameters of Random Forest.
-for name, model in models.items():
+```
 
+### Q5. Display confusion matrix and performance metrics
+```python
+for name, model in models.items():
     y_pred = model.predict(X_test)
 
     print("\n", name)
-
     print("Confusion Matrix:")
-
     print(confusion_matrix(y_test, y_pred))
 
     print("Accuracy:", accuracy_score(y_test, y_pred))
-
     print("Precision:", precision_score(y_test, y_pred))
-
     print("Recall:", recall_score(y_test, y_pred))
-
     print("F1 Score:", f1_score(y_test, y_pred))
-
     print("Error Rate:", 1 - accuracy_score(y_test, y_pred))
-PART B – ADABOOST CLASSIFIER
-Dataset: Adult Census Income Dataset
+```
 
-Q1. Read the dataset and do necessary preprocessing (data imputation in null values, use encoding techniques to convert categorical to numerical).
+---
+
+## PART B – AdaBoost Classifier
+
+Dataset: `adult.csv`
+
+### Q1. Read and preprocess the dataset
+```python
 import pandas as pd
 import numpy as np
 
 from sklearn.preprocessing import LabelEncoder
 
 df = pd.read_csv("adult.csv")
-
 df.columns = df.columns.str.strip()
 
 df = df.replace('?', np.nan)
-
 df = df.dropna()
 
 for col in df.select_dtypes(include='object').columns:
-
     df[col] = df[col].str.strip()
-
     le = LabelEncoder()
-
     df[col] = le.fit_transform(df[col])
 
 print(df.head())
-
 print(df.isnull().sum())
-Q2. Choose independent variable (X) and dependent variable (Y) from given dataset.
-X = df.drop('income', axis=1)
+```
 
+### Q2. Select features and target
+```python
+X = df.drop('income', axis=1)
 y = df['income']
 
 print("Independent Variables:")
@@ -822,9 +771,11 @@ print(X.head())
 
 print("Dependent Variable:")
 print(y.head())
-Q3. Create different models of AdaBoost using different parameters (minimum of 4).
-from sklearn.model_selection import train_test_split
+```
 
+### Q3. Build multiple AdaBoost models
+```python
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import AdaBoostClassifier
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -835,88 +786,70 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 models = {
-    "Model 1": AdaBoostClassifier(
-        n_estimators=50,
-        learning_rate=0.1,
-        random_state=42
-    ),
-
-    "Model 2": AdaBoostClassifier(
-        n_estimators=100,
-        learning_rate=0.5,
-        random_state=42
-    ),
-
-    "Model 3": AdaBoostClassifier(
-        n_estimators=150,
-        learning_rate=1.0,
-        random_state=42
-    ),
-
-    "Model 4": AdaBoostClassifier(
-        n_estimators=200,
-        learning_rate=0.8,
-        random_state=42
-    )
+    "Model 1": AdaBoostClassifier(n_estimators=50, learning_rate=0.1, random_state=42),
+    "Model 2": AdaBoostClassifier(n_estimators=100, learning_rate=0.5, random_state=42),
+    "Model 3": AdaBoostClassifier(n_estimators=150, learning_rate=1.0, random_state=42),
+    "Model 4": AdaBoostClassifier(n_estimators=200, learning_rate=0.8, random_state=42)
 }
 
 for name, model in models.items():
-
     model.fit(X_train, y_train)
-
     print(name, "Training Completed")
-Q4. Find the best parameters for the model and calculate the Ypredict value.
-best_model = None
+```
 
+### Q4. Find the best AdaBoost model
+```python
+best_model = None
 best_f1 = -1
 
 for name, model in models.items():
-
     y_pred = model.predict(X_test)
-
-    f1 = f1_score(
-        y_test,
-        y_pred,
-        zero_division=0
-    )
+    f1 = f1_score(y_test, y_pred, zero_division=0)
 
     print(name, "F1 Score:", f1)
 
     if f1 > best_f1:
-
         best_f1 = f1
-
         best_model = model
 
 print("Best Model:", best_model)
 
 y_pred = best_model.predict(X_test)
-
 print("Predicted Values:")
 print(y_pred)
-Q5. Display the confusion table and calculate accuracy, precision, recall and F-score for different parameters of AdaBoost.
-for name, model in models.items():
+```
 
+### Q5. Display confusion matrix and metrics
+```python
+for name, model in models.items():
     y_pred = model.predict(X_test)
 
     print("\n", name)
-
     print("Confusion Matrix:")
-
     print(confusion_matrix(y_test, y_pred))
 
     print("Accuracy:", accuracy_score(y_test, y_pred))
-
-    print("Precision:", precision_score(
-        y_test, y_pred, zero_division=0
-    ))
-
-    print("Recall:", recall_score(
-        y_test, y_pred, zero_division=0
-    ))
-
-    print("F1 Score:", f1_score(
-        y_test, y_pred, zero_division=0
-    ))
-
+    print("Precision:", precision_score(y_test, y_pred, zero_division=0))
+    print("Recall:", recall_score(y_test, y_pred, zero_division=0))
+    print("F1 Score:", f1_score(y_test, y_pred, zero_division=0))
     print("Error Rate:", 1 - accuracy_score(y_test, y_pred))
+```
+
+---
+
+## Conclusion
+
+This lab demonstrates practical implementation of several important ML techniques:
+
+- Clustering methods for unlabeled data
+- Fuzzy clustering for soft assignments
+- SOM for visual pattern discovery
+- Apriori for transactional rule mining
+- Ensemble methods for classification and performance comparison
+
+These implementations help build a strong foundation in machine learning, pattern recognition, and knowledge discovery.
+
+---
+
+## License
+This project is intended for academic and learning purposes.
