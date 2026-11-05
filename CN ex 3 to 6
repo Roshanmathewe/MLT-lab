@@ -1,0 +1,753 @@
+# CISCO PACKET TRACER – PRACTICAL CONFIGURATION GUIDE
+## Experiments 3, 4, 5 and 6
+
+---
+
+# EXPERIMENT 3 – LAN DESIGN WITH DNS AND DHCP CONFIGURATION
+
+## 1. Aim
+To design a LAN network and configure DNS, DHCP and HTTP services. Test connectivity using the ping command.
+
+## 2. Devices Required
+- 1 Router
+- 2 Switches
+- 2 PCs
+- 1 Laptop
+- 3 Servers (DNS Server, Web Server and DHCP Server)
+- Copper Straight-Through cables
+
+## 3. Network Design
+
+Create two networks:
+
+- Network 1: `192.168.10.0/24`
+- Network 2: `192.168.20.0/24`
+
+Connect:
+- Switch0 to Router0 FastEthernet 0/0.
+- Switch1 to Router0 FastEthernet 1/0.
+- PC2, PC3, DNS Server and Web Server to Switch0.
+- DHCP Server and Laptop0 to Switch1.
+
+## 4. IP Address Configuration
+
+Configure the following IP addresses using Desktop → IP Configuration → Static.
+
+| Device | IP Address | Gateway | DNS |
+|---|---|---|---|
+| DNS Server | 192.168.10.2 | 192.168.10.1 | 192.168.10.2 |
+| Web Server | 192.168.10.4 | 192.168.10.1 | 192.168.10.2 |
+| PC2 | 192.168.10.3 | 192.168.10.1 | 192.168.10.2 |
+| PC3 | 192.168.10.5 | 192.168.10.1 | 192.168.10.2 |
+| DHCP Server | 192.168.20.2 | 192.168.20.1 | 192.168.10.2 |
+
+Subnet mask for all devices: `255.255.255.0`
+
+Leave Laptop0 for DHCP configuration later.
+
+## 5. Router Configuration
+
+Open Router0 → CLI.
+
+Enter the following commands one by one:
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.10.1 255.255.255.0
+no shutdown
+exit
+
+interface fastethernet 1/0
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+exit
+
+ip domain-lookup
+end
+write memory
+```
+
+Verify:
+
+```text
+show ip interface brief
+```
+
+Both FastEthernet interfaces should show `up/up`.
+
+## 6. DNS Server Configuration
+
+1. Click DNS Server.
+2. Select Desktop → IP Configuration.
+3. Enter its static IP settings from the table.
+4. Select Services → DNS.
+5. Turn DNS service ON.
+6. Add the following DNS record:
+
+| Field | Value |
+|---|---|
+| Name | www.myweb.com |
+| Address | 192.168.10.4 |
+
+7. Click Add.
+
+## 7. Web Server Configuration
+
+1. Click Web Server.
+2. Select Services → HTTP.
+3. Turn HTTP service ON.
+4. Confirm that the Web Server has IP address `192.168.10.4`.
+
+## 8. DHCP Server Configuration
+
+1. Click DHCP Server.
+2. Select Services → DHCP.
+3. Turn DHCP service ON.
+4. Create the following DHCP pool:
+
+| Field | Value |
+|---|---|
+| Pool Name | Net2 |
+| Default Gateway | 192.168.20.1 |
+| DNS Server | 192.168.10.2 |
+| Start IP Address | 192.168.20.10 |
+| Subnet Mask | 255.255.255.0 |
+
+5. Click Add or Save, as applicable.
+
+## 9. Laptop DHCP Configuration
+
+1. Click Laptop0.
+2. Select Desktop → IP Configuration.
+3. Select DHCP.
+4. Wait for the laptop to receive an IP address.
+5. Check that it receives an address from the `192.168.20.0/24` network.
+
+## 10. Testing and Verification
+
+From PC3 → Desktop → Command Prompt, enter:
+
+```text
+ping 192.168.10.4
+ping 192.168.10.2
+ping www.myweb.com
+```
+
+To test the webpage:
+
+1. Open PC3 → Desktop → Web Browser.
+2. Enter:
+
+```text
+http://www.myweb.com
+```
+
+3. The webpage should open.
+
+Verify that Laptop0 receives an IP address through DHCP.
+
+## 11. Expected Result
+
+The LAN is successfully designed. DNS resolves the domain name, DHCP assigns an IP address to the laptop, HTTP displays the webpage, and devices communicate through the router.
+
+---
+
+# EXPERIMENT 4 – STATIC ROUTING CONFIGURATION
+
+## 1. Aim
+To configure static routing between two different networks using two routers.
+
+## 2. Devices Required
+- 2 Routers (R1 and R2)
+- 2 Switches (S1 and S2)
+- 4 PCs
+- Copper Straight-Through cables
+- 1 Serial DCE cable
+
+## 3. Network Design
+
+Create two LAN networks and one WAN connection:
+
+- LAN A: `192.168.10.0/24`
+- LAN B: `192.168.20.0/24`
+- WAN: `10.10.10.0/8`
+
+Connect:
+- PC0 and PC1 to Switch S1.
+- Switch S1 to R1 FastEthernet 0/0.
+- PC2 and PC3 to Switch S2.
+- Switch S2 to R2 FastEthernet 0/0.
+- Connect R1 Serial 2/0 to R2 Serial 2/0 using Serial DCE.
+
+## 4. PC IP Address Configuration
+
+| Device | IP Address | Subnet Mask | Gateway |
+|---|---|---|---|
+| PC0 | 192.168.10.2 | 255.255.255.0 | 192.168.10.1 |
+| PC1 | 192.168.10.3 | 255.255.255.0 | 192.168.10.1 |
+| PC2 | 192.168.20.4 | 255.255.255.0 | 192.168.20.1 |
+| PC3 | 192.168.20.2 | 255.255.255.0 | 192.168.20.1 |
+
+Configure these using Desktop → IP Configuration → Static.
+
+## 5. Router R1 Configuration
+
+Open R1 → CLI.
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.10.1 255.255.255.0
+no shutdown
+exit
+
+interface serial 2/0
+ip address 10.10.10.1 255.0.0.0
+clock rate 64000
+no shutdown
+exit
+
+ip route 192.168.20.0 255.255.255.0 serial 2/0
+
+end
+write memory
+```
+
+Note: Enter `clock rate 64000` only on the DCE end of the serial connection. If R1 is not the DCE end, configure the clock rate on R2 instead.
+
+## 6. Router R2 Configuration
+
+Open R2 → CLI.
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+exit
+
+interface serial 2/0
+ip address 10.10.10.2 255.0.0.0
+no shutdown
+exit
+
+ip route 192.168.10.0 255.255.255.0 10.10.10.1
+
+end
+write memory
+```
+
+## 7. Verify Static Routing
+
+On R1 and R2:
+
+```text
+show ip interface brief
+show ip route
+```
+
+In the routing table:
+- `C` means Connected route.
+- `S` means Static route.
+
+## 8. Testing
+
+From PC1:
+
+```text
+ping 192.168.20.2
+```
+
+From PC3:
+
+```text
+ping 192.168.10.2
+```
+
+Both pings should succeed after the interfaces and routes are correctly configured.
+
+You can also use Simulation Mode to observe packet movement between the two LANs.
+
+## 9. Expected Result
+
+Static routes are successfully configured, allowing communication between the two different LAN networks.
+
+---
+
+# EXPERIMENT 5 – OSPF ROUTING CONFIGURATION
+
+**Important:** The uploaded Experiment 5 PDF has a title/aim mismatch on its first page. The procedure from the following pages describes OSPF routing using three routers. The steps below follow that OSPF procedure.
+
+## 1. Aim
+To configure Open Shortest Path First (OSPF) routing between three routers and enable communication between different LAN networks.
+
+## 2. Devices Required
+- 3 Routers (R0, R1 and R2)
+- 3 Switches
+- 3 PCs
+- Serial DCE/DTE cables
+- Copper Straight-Through cables
+
+## 3. Network Design
+
+Create three LAN networks:
+
+- LAN 1: `192.168.1.0/24`
+- LAN 2: `192.168.2.0/24`
+- LAN 3: `192.168.3.0/24`
+
+Connect each PC to its switch and each switch to the FastEthernet 0/0 interface of its router.
+
+Connect the three routers in a triangle using serial connections:
+
+- R0 S0/0 ↔ R1 S0/0
+- R0 S0/1 ↔ R2 S0/0
+- R1 S0/1 ↔ R2 S0/1
+
+## 4. PC IP Address Configuration
+
+| Device | IP Address | Gateway |
+|---|---|---|
+| PC1 | 192.168.1.2 | 192.168.1.1 |
+| PC2 | 192.168.2.2 | 192.168.2.1 |
+| PC3 | 192.168.3.2 | 192.168.3.1 |
+
+Subnet mask: `255.255.255.0`
+
+## 5. Router Interface IP Configuration
+
+### R0
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+exit
+
+interface serial 0/0
+ip address 10.0.0.1 255.255.255.252
+clock rate 64000
+no shutdown
+exit
+
+interface serial 0/1
+ip address 10.0.0.5 255.255.255.252
+clock rate 64000
+no shutdown
+exit
+
+end
+```
+
+### R1
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.2.1 255.255.255.0
+no shutdown
+exit
+
+interface serial 0/0
+ip address 10.0.0.2 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/1
+ip address 10.0.0.9 255.255.255.252
+clock rate 64000
+no shutdown
+exit
+
+end
+```
+
+### R2
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/0
+ip address 192.168.3.1 255.255.255.0
+no shutdown
+exit
+
+interface serial 0/0
+ip address 10.0.0.6 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/1
+ip address 10.0.0.10 255.255.255.252
+no shutdown
+exit
+
+end
+```
+
+**Clock rate note:** Set `clock rate 64000` only on the actual DCE ends. Check the cable end using the router's interface information if necessary. The manual lists the clock rate on R0's serial interfaces and R1's S0/1; verify the DCE ends in your actual topology.
+
+## 6. OSPF Configuration
+
+OSPF is configured on all three routers.
+
+### R0
+
+```text
+enable
+configure terminal
+
+router ospf 2
+router-id 1.1.1.1
+network 192.168.1.0 0.0.0.255 area 0
+network 10.0.0.0 0.0.0.3 area 0
+network 10.0.0.4 0.0.0.3 area 0
+
+end
+```
+
+### R1
+
+```text
+enable
+configure terminal
+
+router ospf 2
+router-id 2.2.2.2
+network 192.168.2.0 0.0.0.255 area 0
+network 10.0.0.0 0.0.0.3 area 0
+network 10.0.0.8 0.0.0.3 area 0
+
+end
+```
+
+### R2
+
+```text
+enable
+configure terminal
+
+router ospf 2
+router-id 3.3.3.3
+network 192.168.3.0 0.0.0.255 area 0
+network 10.0.0.4 0.0.0.3 area 0
+network 10.0.0.8 0.0.0.3 area 0
+
+end
+```
+
+## 7. Verify OSPF
+
+On each router, enter:
+
+```text
+show ip route
+show ip protocols
+show ip interface brief
+```
+
+In the routing table:
+- `C` = Connected route.
+- `O` = OSPF-learned route.
+
+## 8. Testing
+
+From PC1:
+
+```text
+ping 192.168.2.2
+ping 192.168.3.2
+```
+
+From PC2:
+
+```text
+ping 192.168.3.2
+```
+
+The pings should succeed when all router interfaces and OSPF adjacencies are working.
+
+Save the configurations:
+
+```text
+copy running-config startup-config
+```
+
+## 9. Expected Result
+
+OSPF routing is successfully configured between three routers, allowing all three LAN networks to communicate automatically.
+
+---
+
+# EXPERIMENT 6 – VLAN CONFIGURATION AND INTER-VLAN ROUTING
+
+## 1. Aim
+To configure VLANs on a switch, test communication within the same VLAN, and enable communication between different VLANs using Router-on-a-Stick.
+
+## 2. Devices Required
+- 1 Router
+- 1 Layer 2 Switch (2960)
+- 4 PCs
+- Copper Straight-Through cables
+
+## 3. Network Design
+
+Create two VLANs:
+
+- VLAN 10 – Student
+- VLAN 20 – Faculty
+
+Connect:
+- PC-A to Switch Fa0/1
+- PC-B to Switch Fa0/2
+- PC-C to Switch Fa0/3
+- PC-D to Switch Fa0/4
+
+Use Switch Fa0/24 to connect to the router's GigabitEthernet 0/0 interface, as specified in the main topology instructions.
+
+## 4. IP Address Configuration
+
+| Device | VLAN | IP Address | Gateway |
+|---|---|---|---|
+| PC-A | 10 | 192.168.1.2 | 192.168.1.1 |
+| PC-B | 10 | 192.168.1.3 | 192.168.1.1 |
+| PC-C | 20 | 172.16.1.2 | 172.16.1.1 |
+| PC-D | 20 | 172.16.1.3 | 172.16.1.1 |
+
+Subnet mask for all PCs: `255.255.255.0`
+
+## 5. Switch VLAN Configuration
+
+Open Switch → CLI.
+
+```text
+enable
+configure terminal
+
+vlan 10
+name vlan student
+exit
+
+vlan 20
+name vlan faculty
+exit
+
+interface range fastethernet 0/1 - 2
+switchport mode access
+switchport access vlan 10
+exit
+
+interface range fastethernet 0/3 - 4
+switchport mode access
+switchport access vlan 20
+exit
+
+end
+```
+
+Verify:
+
+```text
+show vlan brief
+```
+
+You should see:
+- Fa0/1 and Fa0/2 in VLAN 10.
+- Fa0/3 and Fa0/4 in VLAN 20.
+
+## 6. Test Intra-VLAN Communication
+
+From PC-A:
+
+```text
+ping 192.168.1.3
+```
+
+From PC-C:
+
+```text
+ping 172.16.1.3
+```
+
+Both should succeed.
+
+Now test communication between different VLANs:
+
+From PC-A:
+
+```text
+ping 172.16.1.2
+```
+
+This should fail before inter-VLAN routing is configured.
+
+## 7. Configure the Trunk Port
+
+The trunk port connects the switch to the router.
+
+On the switch CLI:
+
+```text
+enable
+configure terminal
+
+interface fastethernet 0/24
+switchport mode trunk
+switchport trunk allowed vlan 10,20
+
+end
+```
+
+Note: Use the actual switch port connected to the router. If your topology uses another port, replace Fa0/24 with that port.
+
+## 8. Router-on-a-Stick Configuration
+
+Open Router → CLI.
+
+The router physical interface should not have an IP address. Configure the subinterfaces instead.
+
+```text
+enable
+configure terminal
+
+interface gigabitethernet 0/0
+no ip address
+no shutdown
+exit
+
+interface gigabitethernet 0/0.10
+encapsulation dot1Q 10
+ip address 192.168.1.1 255.255.255.0
+exit
+
+interface gigabitethernet 0/0.20
+encapsulation dot1Q 20
+ip address 172.16.1.1 255.255.255.0
+exit
+
+end
+write memory
+```
+
+If your router uses FastEthernet 0/0 instead of GigabitEthernet 0/0, use the actual connected physical interface name consistently for both subinterfaces.
+
+## 9. Verify Configuration
+
+On the switch:
+
+```text
+show vlan brief
+show interfaces trunk
+```
+
+On the router:
+
+```text
+show ip interface brief
+```
+
+## 10. Test Inter-VLAN Communication
+
+From PC-A:
+
+```text
+ping 172.16.1.2
+```
+
+From PC-C:
+
+```text
+ping 192.168.1.2
+```
+
+Both should now succeed.
+
+## 11. Expected Result
+
+VLAN 10 and VLAN 20 are successfully created. Devices within the same VLAN communicate through the switch, and devices in different VLANs communicate through Router-on-a-Stick.
+
+---
+
+# IMPORTANT COMMANDS TO REMEMBER
+
+| Command | Purpose |
+|---|---|
+| `enable` | Enter privileged mode |
+| `configure terminal` | Enter configuration mode |
+| `interface fa0/0` | Select an interface |
+| `ip address` | Assign an IP address |
+| `no shutdown` | Enable an interface |
+| `shutdown` | Disable an interface |
+| `exit` | Return to previous configuration mode |
+| `end` | Return to privileged mode |
+| `write memory` | Save router configuration |
+| `show ip interface brief` | Check interface status and IP addresses |
+| `show ip route` | Display routing table |
+| `show vlan brief` | Display VLAN information |
+| `show interfaces trunk` | Check trunk ports |
+| `ping` | Test connectivity |
+| `copy running-config startup-config` | Save router configuration |
+
+# IMPORTANT VIVA QUESTIONS
+
+1. What is a router?  
+   A router connects different networks and forwards packets between them.
+
+2. What is DNS?  
+   DNS converts domain names into IP addresses.
+
+3. What is DHCP?  
+   DHCP automatically assigns IP addresses and other network settings to clients.
+
+4. What is static routing?  
+   Static routing uses manually configured routes to reach remote networks.
+
+5. What is OSPF?  
+   OSPF is a dynamic link-state routing protocol that automatically learns routes.
+
+6. What is a wildcard mask?  
+   A wildcard mask tells OSPF which network addresses to match.
+
+7. What is a VLAN?  
+   A VLAN logically divides a physical switch network into separate broadcast domains.
+
+8. What is a trunk port?  
+   A trunk port carries traffic belonging to multiple VLANs.
+
+9. What is Router-on-a-Stick?  
+   It is a method of inter-VLAN routing using one physical router interface with multiple VLAN subinterfaces.
+
+10. What is the purpose of the ping command?  
+    It tests connectivity between two network devices using ICMP.
+
+---
+
+# FINAL PRACTICAL EXAM CHECKLIST
+
+Before completing each experiment, check:
+
+- [ ] All required devices are added.
+- [ ] All cables are connected to the correct ports.
+- [ ] IP addresses and subnet masks are correct.
+- [ ] Default gateways are configured correctly.
+- [ ] Router interfaces are enabled using `no shutdown`.
+- [ ] Routing, DNS, DHCP or VLAN configuration is completed as required.
+- [ ] Verification commands are executed.
+- [ ] Ping tests give the expected results.
+- [ ] Configuration is saved.
+- [ ] Screenshots of the topology, configurations and successful tests are captured.
+
+**Tip:** Always check the interface names available on your Packet Tracer router before entering commands. Some router models use FastEthernet interfaces, while others use GigabitEthernet interfaces. Serial interface names and available ports may also differ depending on the model and installed modules.
